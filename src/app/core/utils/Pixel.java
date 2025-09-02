@@ -7,4 +7,17 @@ public class Pixel {
         this.x = x;
         this.y = y;
     }
+
+    public Pixel add(Pixel p) {
+        return new Pixel(x + p.x, y + p.y);
+    }
+    public Pixel sub(Pixel p) {
+        return new Pixel(x - p.x, y - p.y);
+    }
+    public Pixel mul(Pixel p) {
+        return new Pixel(x * p.x, y * p.y);
+    }
+    public Pixel div(Pixel p) {
+        return new Pixel(x / p.x, y / p.y);
+    }
 }

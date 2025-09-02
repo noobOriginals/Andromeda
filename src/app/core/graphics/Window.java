@@ -1,5 +1,6 @@
 package app.core.graphics;
 
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -10,15 +11,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import app.core.utils.Pixel;
+
 public class Window {
     private final String TITLE;
     private final int WIDTH, HEIGHT;
 
     private final JFrame window;
     private final KeyInput keyInput;
-    private final ImageIcon baseCanvas;
 
+    private ImageIcon baseCanvas;
     private BufferedImage canvas;
+
+    private long startTime, endTime, targetDelta;
+    private int frames, FPS;
+    private double deltaTime;
 
     public Window(String title, int width, int height) {
         // Constants for resseting the winow to default parameters
@@ -40,8 +47,31 @@ public class Window {
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+
+        // Other utility stuff
+        startTime = 0;
+        endTime = 0;
+        targetDelta = 0;
+        frames = 0;
+        FPS = 0;
+        deltaTime = 0.0;
     }
 
+    public void drawSprite(Sprite sprite) {
+        SwingUtilities.invokeLater(() -> {
+            Graphics2D g2d = canvas.createGraphics();
+            Pixel spritePos = sprite.getPos();
+            g2d.drawImage(sprite.getImage(), null, spritePos.x, spritePos.y);
+            g2d.dispose();
+        });
+    }
+    public void drawFPS() {
+        SwingUtilities.invokeLater(() -> {
+            Graphics2D g2d = canvas.createGraphics();
+            g2d.drawString(FPS + "", 10,10);
+            g2d.dispose();
+        });
+    }
     public void clear() {
         SwingUtilities.invokeLater(() -> {
             canvas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -51,6 +81,13 @@ public class Window {
     public void refresh() {
         SwingUtilities.invokeLater(() -> {
             window.repaint();
+            endTime = System.nanoTime();
+            frames++;
+            if (endTime - startTime >= 1000000000) {
+                FPS = frames;
+                frames = 0;
+                startTime = endTime;
+            }
         });
     }
     public void setResizable(boolean b) {
