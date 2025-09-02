@@ -1,5 +1,7 @@
 package app.core.graphics;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import app.core.utils.ExceptionHandler;
 import app.core.utils.Pixel;
 
 public class Window {
@@ -23,8 +26,11 @@ public class Window {
     private ImageIcon baseCanvas;
     private BufferedImage canvas;
 
+    private volatile boolean exit;
+    private boolean fullscreen, capFPS;
+
     private long startTime, endTime, targetDelta;
-    private int frames, FPS;
+    private int frames, FPS, FPSCap;
     private double deltaTime;
 
     public Window(String title, int width, int height) {
@@ -49,6 +55,9 @@ public class Window {
         window.setVisible(true);
 
         // Other utility stuff
+        exit = false;
+        fullscreen = false;
+        capFPS = false;
         startTime = 0;
         endTime = 0;
         targetDelta = 0;
@@ -68,27 +77,38 @@ public class Window {
     public void drawFPS() {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
+            g2d.setColor(Color.BLACK);
             g2d.drawString(FPS + "", 10,10);
             g2d.dispose();
         });
     }
     public void clear() {
         SwingUtilities.invokeLater(() -> {
-            canvas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+            canvas = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_INT_ARGB);
             baseCanvas.setImage(canvas);
         });
     }
     public void refresh() {
+        endTime = System.nanoTime();
         SwingUtilities.invokeLater(() -> {
             window.repaint();
-            endTime = System.nanoTime();
-            frames++;
-            if (endTime - startTime >= 1000000000) {
-                FPS = frames;
-                frames = 0;
-                startTime = endTime;
-            }
         });
+        frames++;
+        deltaTime = (double)(endTime - startTime) / targetDelta;
+        if (endTime - startTime >= 1000000000) {
+            FPS = frames;
+            frames = 0;
+            startTime = endTime;
+        }
+        long sleepTime;
+        if (capFPS) {
+            double targetSleepTime = 1000000000.0 / FPSCap;
+            sleepTime = (long)(targetSleepTime);
+        }
+        else {
+            sleepTime = 1000000;
+        }
+        ExceptionHandler.tryCatch(() -> { Thread.sleep(sleepTime / 1000000); });
     }
     public void setResizable(boolean b) {
         window.setResizable(b);
@@ -99,13 +119,46 @@ public class Window {
     public void hide() {
         window.setVisible(false);
     }
+    public void fullscreen() {
+        fullscreen = true;
+        SwingUtilities.invokeLater(() -> {
+            window.dispose();
+            window.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            window.setUndecorated(true);
+            window.setVisible(true);
+        });
+    }
+    public void windowed() {
+        fullscreen = false;
+        SwingUtilities.invokeLater(() -> {
+            window.dispose();
+            window.setExtendedState(0);
+            window.setSize(new Dimension(WIDTH, HEIGHT));
+            window.setUndecorated(false);
+            window.setVisible(true);
+        });
+    }
+    public void setTargetFPS(int fps) {
+        targetDelta = (long)(1000000000.0 / fps);
+    }
+    public void setFPSCap(int fps) {
+        FPSCap = fps;
+    }
+    public void capFPS() {
+        capFPS = true;
+    }
+    public void uncapFPS() {
+        capFPS = false;
+    }
 
     public boolean shouldClose() {
-        if (window.isDisplayable()) {
-            return false;
-        } else {
-            return true;
-        }
+        SwingUtilities.invokeLater(() -> {
+            exit = !window.isDisplayable();
+        });
+        return exit;
+    }
+    public boolean isFullscreen() {
+        return fullscreen;
     }
     public boolean keyPressed(int keycode) {
         return keyInput.keyPressed(keycode);
@@ -113,13 +166,18 @@ public class Window {
     public boolean keyPressed(char keychar) {
         return keyInput.keyPressed(keychar);
     }
+    public double getDeltaTime() {
+        return deltaTime;
+    }
 
     public void resetParams() {
-        canvas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        baseCanvas.setImage(canvas);
-        keyInput.resetParams();
-        window.setTitle(TITLE);
-        window.repaint();
+        SwingUtilities.invokeLater(() -> {
+            canvas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+            baseCanvas.setImage(canvas);
+            keyInput.resetParams();
+            window.setTitle(TITLE);
+            window.repaint();
+        });
     }
 
     private class KeyInput implements KeyListener {

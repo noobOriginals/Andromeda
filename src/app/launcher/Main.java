@@ -2,14 +2,14 @@ package app.launcher;
 
 import app.core.graphics.Sprite;
 import app.core.graphics.Window;
-import app.core.utils.ExceptionHandler;
 
 public class Main {
     public static void main(String[] args) {
         Window window = new Window("Andromeda", 800, 600);
         Sprite s = new Sprite();
         s.loadImageFromFile("resources/sprite.png");
-        window.clear();
+        window.setFPSCap(120);
+        window.capFPS();
         while (true) {
             if (window.shouldClose()) {
                 System.exit(0);
@@ -26,13 +26,16 @@ public class Main {
             if (window.keyPressed('d')) {
                 s.moveX(1);
             }
+            if (window.keyPressed('f') && !window.isFullscreen()) {
+                window.fullscreen();
+            }
+            if (window.keyPressed('r') && window.isFullscreen()) {
+                window.windowed();
+            }
             window.clear();
             window.drawSprite(s);
             window.drawFPS();
             window.refresh();
-            ExceptionHandler.tryCatch(() -> {
-                Thread.sleep(1000 / 1000);
-            });
         }
     }
 }
