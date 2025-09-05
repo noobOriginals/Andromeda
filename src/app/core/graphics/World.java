@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import app.core.utils.ExceptionHandler;
 
 public class World {
-    private Tile[][] tiles;
+    private int[][] tiles;
     private Chunk[][] chunks;
     private ArrayList<BufferedImage> images;
     private int sizeX, sizeY, chunksX, chunksY;
@@ -22,7 +22,7 @@ public class World {
         this.chunksX = chunksX;
         this.chunksY = chunksY;
         seed = mapSeed;
-        tiles = new Tile[sizeY][sizeX];
+        tiles = new int[sizeY][sizeX];
         images = new ArrayList<>();
         worldScale = 1;
         chunks = new Chunk[chunksY][chunksX];
@@ -64,7 +64,7 @@ public class World {
                     idx = 1;
                 }
                 // idx = 4; // Debugging
-                tiles[y][x] = new Tile(null, idx);
+                tiles[y][x] = idx;
             }
         }
     }
@@ -75,7 +75,7 @@ public class World {
         worldScale = scale;
     }
 
-    public Tile[][] getTiles() {
+    public int[][] getTiles() {
         return tiles;
     }
     public Chunk[][] getChunks() {

@@ -79,14 +79,14 @@ public class Window {
     public void drawWorld(World world) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
-            Tile[][] tiles = world.getTiles();
+            int[][] tiles = world.getTiles();
             ArrayList<BufferedImage> images = world.getImages();
             int scale = world.getWorldScale();
             int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             for (int y = 0; y < world.getGridSizeY(); y++) {
                 for (int x = 0; x < world.getGridSizeX(); x++) {
-                    g2d.drawImage(images.get(tiles[y][x].getImageIdx()), x * tileSizeX, y * tileSizeY, tileSizeX, tileSizeY, null);
+                    g2d.drawImage(images.get(tiles[y][x]), x * tileSizeX, y * tileSizeY, tileSizeX, tileSizeY, null);
                 }
             }
             g2d.dispose();
