@@ -7,33 +7,41 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import app.core.utils.ExceptionHandler;
-import app.core.utils.Pixel;
 
 public class World {
-    private ArrayList<Tile> tileGrid;
+    private Tile[][] tiles;
+    private Chunk[][] chunks;
     private ArrayList<BufferedImage> images;
-    private int sizeX, sizeY;
+    private int sizeX, sizeY, chunksX, chunksY;
     private int worldScale;
     private String seed;
 
-    public World(String mapSeed, int gridSizeX, int gridSizeY) {
+    public World(String mapSeed, int gridSizeX, int gridSizeY, int chunksX, int chunksY) {
         sizeX = gridSizeX;
         sizeY = gridSizeY;
+        this.chunksX = chunksX;
+        this.chunksY = chunksY;
         seed = mapSeed;
-        tileGrid = new ArrayList<>();
+        tiles = new Tile[sizeY][sizeX];
         images = new ArrayList<>();
         worldScale = 1;
+        chunks = new Chunk[chunksY][chunksX];
     }
 
     public void loadMapSeed() {
-        int[] indices = new int[tileGrid.size()];
-        for (int i = 0; i < tileGrid.size(); i++) {
-            indices[i] = tileGrid.get(i).getImageIdx();
-        }
+
     }
     public void loadMapSeed(String mapSeed) {
         seed = mapSeed;
         loadMapSeed();
+    }
+
+    public void loadChunks(int chunkSizeX, int chunkSizeY) {
+        for (int y = 0; y < chunksY; y++) {
+            for (int x = 0; x < chunksX; x++) {
+                chunks[y][x] = new Chunk(this, x * chunkSizeX, y * chunkSizeY, chunkSizeX, chunkSizeY);
+            }
+        }
     }
 
     public void addImage(String imagePath) {
@@ -42,8 +50,8 @@ public class World {
         });
     }
     public void createMap() {
-        for (int y = 0; y < sizeX; y++) {
-            for (int x = 0; x < sizeY; x++) {
+        for (int y = 0; y < sizeY; y++) {
+            for (int x = 0; x < sizeX; x++) {
                 int idx = 0;
                 int boundary = 10;
                 if (y == 0) {
@@ -55,7 +63,8 @@ public class World {
                 else if (y > boundary) {
                     idx = 1;
                 }
-                tileGrid.add(new Tile(new Pixel(x, y), idx));
+                // idx = 4; // Debugging
+                tiles[y][x] = new Tile(null, idx);
             }
         }
     }
@@ -66,8 +75,17 @@ public class World {
         worldScale = scale;
     }
 
-    public ArrayList<Tile> getTiles() {
-        return tileGrid;
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+    public Chunk[][] getChunks() {
+        return chunks;
+    }
+    public int getChunkCountX() {
+        return chunksX;
+    }
+    public int getChunkCountY() {
+        return chunksY;
     }
     public ArrayList<BufferedImage> getImages() {
         if (images.isEmpty()) {
@@ -77,5 +95,11 @@ public class World {
     }
     public int getWorldScale() {
         return worldScale;
+    }
+    public int getGridSizeX() {
+        return sizeX;
+    }
+    public int getGridSizeY() {
+        return sizeY;
     }
 }

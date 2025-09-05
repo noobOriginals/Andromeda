@@ -11,13 +11,15 @@ public class Main {
         s.loadImageFromFile("resources/sprite.png");
         window.setFPSCap(120);
         window.capFPS();
-        World world = new World(null, 50, 30);
+        World world = new World(null, 50, 30, 5, 3);
         world.addImage("resources/tile0.png");
         world.addImage("resources/tile1.png");
         world.addImage("resources/tile2.png");
         world.addImage("resources/tile3.png");
+        world.addImage("resources/tile4.png");
         world.createMap();
         world.setWorldScale(2);
+        world.loadChunks(10, 10);
         while (true) {
             if (window.shouldClose()) {
                 System.exit(0);
@@ -41,7 +43,7 @@ public class Main {
                 window.windowed();
             }
             window.clear();
-            window.drawWorld(world);
+            window.drawWorldChunks(world);
             window.drawSprite(s);
             window.drawFPS();
             window.refresh();

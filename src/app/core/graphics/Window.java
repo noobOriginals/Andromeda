@@ -79,13 +79,30 @@ public class Window {
     public void drawWorld(World world) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
+            Tile[][] tiles = world.getTiles();
             ArrayList<BufferedImage> images = world.getImages();
             int scale = world.getWorldScale();
             int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-            for (Tile t : world.getTiles()) {
-                Pixel gridPos = t.getGridPos();
-                g2d.drawImage(images.get(t.getImageIdx()), gridPos.x * tileSizeX, gridPos.y * tileSizeY, tileSizeX, tileSizeY, null);
+            for (int y = 0; y < world.getGridSizeY(); y++) {
+                for (int x = 0; x < world.getGridSizeX(); x++) {
+                    g2d.drawImage(images.get(tiles[y][x].getImageIdx()), x * tileSizeX, y * tileSizeY, tileSizeX, tileSizeY, null);
+                }
+            }
+            g2d.dispose();
+        });
+    }
+    public void drawWorldChunks(World world) {
+        SwingUtilities.invokeLater(() -> {
+            Graphics2D g2d = canvas.createGraphics();
+            Chunk[][] chunks = world.getChunks();
+            int scale = world.getWorldScale();
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            for (int y = 0; y < world.getChunkCountY(); y++) {
+                for (int x = 0; x < world.getChunkCountX(); x++) {
+                    BufferedImage image = chunks[y][x].getImage();
+                    g2d.drawImage(image, x * image.getWidth() * scale, y * image.getHeight() * scale, image.getWidth() * scale, image.getHeight() * scale, null);
+                }
             }
             g2d.dispose();
         });
