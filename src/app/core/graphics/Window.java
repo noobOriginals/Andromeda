@@ -68,6 +68,7 @@ public class Window {
         deltaTime = 0.0;
     }
 
+    long st;
     public void drawSprite(Sprite sprite) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
@@ -117,6 +118,7 @@ public class Window {
     }
     public void clear() {
         SwingUtilities.invokeLater(() -> {
+            st = System.nanoTime();
             canvas = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_INT_ARGB);
             baseCanvas.setImage(canvas);
         });
@@ -124,6 +126,11 @@ public class Window {
     public void refresh() {
         endTime = System.nanoTime();
         SwingUtilities.invokeLater(() -> {
+            long frameTime = System.nanoTime() - st;
+            Graphics2D g2d = canvas.createGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("Frame Time: " + (frameTime / 1000000.0) + "ms", 10, 40);
+            g2d.dispose();
             window.repaint();
         });
         frames++;

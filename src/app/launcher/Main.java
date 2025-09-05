@@ -44,6 +44,7 @@ public class Main {
             }
             window.clear();
             window.drawWorldChunks(world);
+            // window.drawWorld(world);
             window.drawSprite(s);
             window.drawFPS();
             window.refresh();
