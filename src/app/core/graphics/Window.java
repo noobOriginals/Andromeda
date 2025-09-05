@@ -3,9 +3,11 @@ package app.core.graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -74,11 +76,25 @@ public class Window {
             g2d.dispose();
         });
     }
+    public void drawWorld(World world) {
+        SwingUtilities.invokeLater(() -> {
+            Graphics2D g2d = canvas.createGraphics();
+            ArrayList<BufferedImage> images = world.getImages();
+            int scale = world.getWorldScale();
+            int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            for (Tile t : world.getTiles()) {
+                Pixel gridPos = t.getGridPos();
+                g2d.drawImage(images.get(t.getImageIdx()), gridPos.x * tileSizeX, gridPos.y * tileSizeY, tileSizeX, tileSizeY, null);
+            }
+            g2d.dispose();
+        });
+    }
     public void drawFPS() {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
             g2d.setColor(Color.BLACK);
-            g2d.drawString(FPS + "", 10,10);
+            g2d.drawString("FPS: " + FPS, 10,20);
             g2d.dispose();
         });
     }
@@ -135,6 +151,7 @@ public class Window {
             window.setExtendedState(0);
             window.setSize(new Dimension(WIDTH, HEIGHT));
             window.setUndecorated(false);
+            window.setLocationRelativeTo(null);
             window.setVisible(true);
         });
     }

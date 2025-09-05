@@ -2,6 +2,7 @@ package app.launcher;
 
 import app.core.graphics.Sprite;
 import app.core.graphics.Window;
+import app.core.graphics.World;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,21 +11,28 @@ public class Main {
         s.loadImageFromFile("resources/sprite.png");
         window.setFPSCap(120);
         window.capFPS();
+        World world = new World(null, 50, 30);
+        world.addImage("resources/tile0.png");
+        world.addImage("resources/tile1.png");
+        world.addImage("resources/tile2.png");
+        world.addImage("resources/tile3.png");
+        world.createMap();
+        world.setWorldScale(2);
         while (true) {
             if (window.shouldClose()) {
                 System.exit(0);
             }
             if (window.keyPressed('w')) {
-                s.moveY(-1);
+                s.moveY(-2);
             }
             if (window.keyPressed('s')) {
-                s.moveY(1);
+                s.moveY(2);
             }
             if (window.keyPressed('a')) {
-                s.moveX(-1);
+                s.moveX(-2);
             }
             if (window.keyPressed('d')) {
-                s.moveX(1);
+                s.moveX(2);
             }
             if (window.keyPressed('f') && !window.isFullscreen()) {
                 window.fullscreen();
@@ -33,6 +41,7 @@ public class Main {
                 window.windowed();
             }
             window.clear();
+            window.drawWorld(world);
             window.drawSprite(s);
             window.drawFPS();
             window.refresh();
