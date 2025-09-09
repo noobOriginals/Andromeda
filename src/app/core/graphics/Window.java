@@ -95,13 +95,18 @@ public class Window {
     public void drawWorldChunks(World world) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
-            Chunk[][] chunks = world.getChunks();
+            int[][] tiles = world.getTiles();
+            ArrayList<BufferedImage> images = world.getImages();
             int scale = world.getWorldScale();
+            int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-            for (int y = 0; y < world.getChunkCountY(); y++) {
-                for (int x = 0; x < world.getChunkCountX(); x++) {
-                    BufferedImage image = chunks[y][x].getImage();
-                    g2d.drawImage(image, x * image.getWidth() * scale, y * image.getHeight() * scale, image.getWidth() * scale, image.getHeight() * scale, null);
+            for (Chunk c : world.getChunks()) {
+                for (int y = 0; y < c.getHeight(); y++) {
+                    for (int x = 0; x < c.getWidth(); x++) {
+                        int tx = x + c.getXOffset();
+                        int ty = y + c.getYOffset();
+                        g2d.drawImage(images.get(tiles[ty][tx]), tx * tileSizeX, ty * tileSizeY, tileSizeX, tileSizeY, null);
+                    }
                 }
             }
             g2d.dispose();

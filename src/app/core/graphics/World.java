@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import app.core.utils.ExceptionHandler;
+import app.core.utils.Pixel;
 
 public class World {
     private int[][] tiles;
-    private Chunk[][] chunks;
+    private Chunk[] chunks;
     private ArrayList<BufferedImage> images;
     private int sizeX, sizeY, chunksX, chunksY;
     private int worldScale;
@@ -25,7 +26,7 @@ public class World {
         tiles = new int[sizeY][sizeX];
         images = new ArrayList<>();
         worldScale = 1;
-        chunks = new Chunk[chunksY][chunksX];
+        chunks = new Chunk[chunksY * chunksX];
     }
 
     public void loadMapSeed() {
@@ -39,7 +40,19 @@ public class World {
     public void loadChunks(int chunkSizeX, int chunkSizeY) {
         for (int y = 0; y < chunksY; y++) {
             for (int x = 0; x < chunksX; x++) {
-                chunks[y][x] = new Chunk(this, x * chunkSizeX, y * chunkSizeY, chunkSizeX, chunkSizeY);
+                chunks[y * chunksX + x] = new Chunk(chunkSizeX, chunkSizeY, x * chunkSizeX, y * chunkSizeY);
+            }
+        }
+    }
+
+    public void loadChunksAroundPlayer(Pixel playerPos, int chunkSizeX, int chunkSizeY) {
+        int scale = getWorldScale();
+        int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
+        int offx = (int)(playerPos.x / (tileSizeX * chunkSizeX));
+        int offy = (int)(playerPos.y / (tileSizeY * chunkSizeY));
+        for (int y = 0; y < chunksY; y++) {
+            for (int x = 0; x < chunksX; x++) {
+                chunks[y * chunksX + x] = new Chunk(chunkSizeX, chunkSizeY, (x + offx) * chunkSizeX, (y + offy) * chunkSizeY);
             }
         }
     }
@@ -78,7 +91,7 @@ public class World {
     public int[][] getTiles() {
         return tiles;
     }
-    public Chunk[][] getChunks() {
+    public Chunk[] getChunks() {
         return chunks;
     }
     public int getChunkCountX() {
