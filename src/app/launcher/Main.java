@@ -3,6 +3,7 @@ package app.launcher;
 import app.core.graphics.Sprite;
 import app.core.graphics.Window;
 import app.core.graphics.World;
+import app.core.utils.Pixel;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,7 +12,7 @@ public class Main {
         s.loadImageFromFile("resources/sprite.png");
         window.setFPSCap(120);
         window.capFPS();
-        World world = new World(null, 50, 30, 2, 2);
+        World world = new World(null, 50, 30, 5, 5);
         world.addImage("resources/tile0.png");
         world.addImage("resources/tile1.png");
         world.addImage("resources/tile2.png");
@@ -41,9 +42,9 @@ public class Main {
             if (window.keyPressed('r') && window.isFullscreen()) {
                 window.windowed();
             }
-            world.loadChunksAroundPlayer(s.getPos(), 2, 2);
+            world.loadChunksAroundPlayer(new Pixel(s.getPos().x + window.getWidth() / 2, s.getPos().y + window.getHeight() / 2), 2, 2);
             window.clear();
-            window.drawWorldChunks(world);
+            window.drawWorldChunks(world, new Pixel(-s.getPos().x, -s.getPos().y));
             window.drawSprite(s);
             window.drawFPS();
             window.refresh();

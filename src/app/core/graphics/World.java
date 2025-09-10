@@ -48,10 +48,14 @@ public class World {
     public void loadChunksAroundPlayer(Pixel playerPos, int chunkSizeX, int chunkSizeY) {
         int scale = getWorldScale();
         int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
-        int offx = (int)(playerPos.x / (tileSizeX * chunkSizeX));
-        int offy = (int)(playerPos.y / (tileSizeY * chunkSizeY));
+        int offx = (int)(playerPos.x / (tileSizeX * chunkSizeX)) - chunksX / 2;
+        int offy = (int)(playerPos.y / (tileSizeY * chunkSizeY)) - chunksY / 2;
         for (int y = 0; y < chunksY; y++) {
             for (int x = 0; x < chunksX; x++) {
+                if (x + offx < 0 || y + offy < 0) {
+                    chunks[y * chunksX + x] = null;
+                    continue;
+                }
                 chunks[y * chunksX + x] = new Chunk(chunkSizeX, chunkSizeY, (x + offx) * chunkSizeX, (y + offy) * chunkSizeY);
             }
         }

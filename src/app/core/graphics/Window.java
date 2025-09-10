@@ -72,7 +72,7 @@ public class Window {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
             Pixel spritePos = sprite.getPos();
-            g2d.drawImage(sprite.getImage(), null, spritePos.x, spritePos.y);
+            g2d.drawImage(sprite.getImage(), null, canvas.getWidth() / 2, canvas.getHeight() / 2);
             g2d.dispose();
         });
     }
@@ -92,7 +92,7 @@ public class Window {
             g2d.dispose();
         });
     }
-    public void drawWorldChunks(World world) {
+    public void drawWorldChunks(World world, Pixel pos) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
             int[][] tiles = world.getTiles();
@@ -101,11 +101,14 @@ public class Window {
             int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             for (Chunk c : world.getChunks()) {
+                if (c == null) {
+                    continue;
+                }
                 for (int y = 0; y < c.getHeight(); y++) {
                     for (int x = 0; x < c.getWidth(); x++) {
                         int tx = x + c.getXOffset();
                         int ty = y + c.getYOffset();
-                        g2d.drawImage(images.get(tiles[ty][tx]), tx * tileSizeX, ty * tileSizeY, tileSizeX, tileSizeY, null);
+                        g2d.drawImage(images.get(tiles[ty][tx]), tx * tileSizeX + pos.x, ty * tileSizeY + pos.y, tileSizeX, tileSizeY, null);
                     }
                 }
             }
@@ -207,6 +210,12 @@ public class Window {
     }
     public double getDeltaTime() {
         return deltaTime;
+    }
+    public int getWidth() {
+        return canvas.getWidth();
+    }
+    public int getHeight() {
+        return canvas.getHeight();
     }
 
     public void resetParams() {
