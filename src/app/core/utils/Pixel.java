@@ -1,23 +1,31 @@
 package app.core.utils;
 
 public class Pixel {
-    public int x, y;
-
-    public Pixel(int x, int y) {
-        this.x = x;
-        this.y = y;
+    private byte r, g, b;
+    public Pixel() {
+        r = g = b = 0;
+    }
+    public Pixel(int x) {
+        r = g = b = (byte)x;
+    }
+    public Pixel(int r, int g, int b) {
+        this.r = (byte)r;
+        this.g = (byte)g;
+        this.b = (byte)b;
+    }
+    public Pixel(Vec3 v) {
+        r = (byte)(v.x * 255.0f);
+        g = (byte)(v.y * 255.0f);
+        b = (byte)(v.z * 255.0f);
     }
 
-    public Pixel add(Pixel p) {
-        return new Pixel(x + p.x, y + p.y);
+    public byte r() {
+        return r;
     }
-    public Pixel sub(Pixel p) {
-        return new Pixel(x - p.x, y - p.y);
+    public byte g() {
+        return g;
     }
-    public Pixel mul(Pixel p) {
-        return new Pixel(x * p.x, y * p.y);
-    }
-    public Pixel div(Pixel p) {
-        return new Pixel(x / p.x, y / p.y);
+    public byte b() {
+        return b;
     }
 }

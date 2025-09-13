@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import app.core.utils.ExceptionHandler;
-import app.core.utils.Pixel;
+import app.core.utils.Pos;
 
 public class Window {
     private final String TITLE;
@@ -71,7 +71,7 @@ public class Window {
     public void drawSprite(Sprite sprite) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
-            Pixel spritePos = sprite.getPos();
+            Pos spritePos = sprite.getPos();
             g2d.drawImage(sprite.getImage(), null, canvas.getWidth() / 2, canvas.getHeight() / 2);
             g2d.dispose();
         });
@@ -92,7 +92,7 @@ public class Window {
             g2d.dispose();
         });
     }
-    public void drawWorldChunks(World world, Pixel pos) {
+    public void drawWorldChunks(World world, Pos pos) {
         SwingUtilities.invokeLater(() -> {
             Graphics2D g2d = canvas.createGraphics();
             int[][] tiles = world.getTiles();

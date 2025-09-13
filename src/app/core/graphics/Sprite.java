@@ -6,11 +6,11 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import app.core.utils.ExceptionHandler;
-import app.core.utils.Pixel;
+import app.core.utils.Pos;
 
 public class Sprite {
     private BufferedImage image = null;
-    private Pixel position = new Pixel(0, 0);
+    private Pos position = new Pos(0, 0);
 
     public void loadImageFromFile(String filepath) {
         ExceptionHandler.tryCatch(() -> {
@@ -18,10 +18,10 @@ public class Sprite {
         });
     }
 
-    public void setPos(Pixel pos) {
+    public void setPos(Pos pos) {
         position = pos;
     }
-    public void moveBy(Pixel addPos) {
+    public void moveBy(Pos addPos) {
         position = position.add(addPos);
     }
     public void moveX(int x) {
@@ -34,7 +34,7 @@ public class Sprite {
     public BufferedImage getImage() {
         return image;
     }
-    public Pixel getPos() {
+    public Pos getPos() {
         return position;
     }
 }

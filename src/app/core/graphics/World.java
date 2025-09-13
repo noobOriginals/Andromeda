@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import app.core.utils.ExceptionHandler;
-import app.core.utils.Pixel;
+import app.core.utils.Generators;
+import app.core.utils.Pos;
 
 public class World {
     private int[][] tiles;
@@ -45,7 +46,7 @@ public class World {
         }
     }
 
-    public void loadChunksAroundPlayer(Pixel playerPos, int chunkSizeX, int chunkSizeY) {
+    public void loadChunksAroundPlayer(Pos playerPos, int chunkSizeX, int chunkSizeY) {
         int scale = getWorldScale();
         int tileSizeX = images.get(0).getWidth() * scale, tileSizeY = images.get(0).getHeight() * scale;
         int offx = (int)(playerPos.x / (tileSizeX * chunkSizeX)) - chunksX / 2;
@@ -66,7 +67,7 @@ public class World {
             images.add(ImageIO.read(new File(imagePath)));
         });
     }
-    public void createMap() {
+    public void createMap(double scale) {
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
                 int idx = 0;
@@ -81,6 +82,14 @@ public class World {
                     idx = 1;
                 }
                 // idx = 4; // Debugging
+                tiles[y][x] = idx;
+                double v = Generators.perlin(x / scale, y / scale);
+                if (v < 0.0) {
+                    idx = 1;
+                }
+                else if (v >= 0.0) {
+                    idx = 0;
+                }
                 tiles[y][x] = idx;
             }
         }

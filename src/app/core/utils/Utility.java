@@ -20,6 +20,24 @@ public class Utility {
         }
         return value;
     }
+    public static Vec2 clamp(Vec2 v, double min, double max) {
+        double x, y;
+        x = v.x;
+        y = v.y;
+        if (v.x < min) {
+            x = min;
+        }
+        if (v.x > max) {
+            x = max;
+        }
+        if (v.y < min) {
+            y = min;
+        }
+        if (v.y > max) {
+            y = max;
+        }
+        return new Vec2(x, y);
+    }
     public static Vec3 clamp(Vec3 v, double min, double max) {
         double x, y, z;
         x = v.x;
@@ -57,6 +75,15 @@ public class Utility {
     public static double randomGaussian(double mean, double stddev) {
         return mean + stddev * threadLocalRandom.get().nextGaussian();
     }
+    public static Vec2 randomVec2() {
+        return new Vec2(randomDouble(), randomDouble());
+    }
+    public static Vec2 randomVec2(double min, double max) {
+        return new Vec2(randomDouble(min, max), randomDouble(min, max));
+    }
+    public static Vec2 randomUnitVec2() {
+        return new Vec2(randomGaussian(), randomGaussian()).normalize();
+    }
     public static Vec3 randomVec3() {
         return new Vec3(randomDouble(), randomDouble(), randomDouble());
     }
@@ -71,6 +98,9 @@ public class Utility {
     }
     public static boolean isNearZero(double d) {
         return Math.abs(d) < 1e-8;
+    }
+    public static boolean isNearZero(Vec2 v) {
+        return isNearZero(v.x) && isNearZero(v.y);
     }
     public static boolean isNearZero(Vec3 v) {
         return isNearZero(v.x) && isNearZero(v.y) && isNearZero(v.z);

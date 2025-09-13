@@ -3,7 +3,7 @@ package app.launcher;
 import app.core.graphics.Sprite;
 import app.core.graphics.Window;
 import app.core.graphics.World;
-import app.core.utils.Pixel;
+import app.core.utils.Pos;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,29 +12,29 @@ public class Main {
         s.loadImageFromFile("resources/sprite.png");
         window.setFPSCap(120);
         window.capFPS();
-        World world = new World(null, 50, 30, 5, 5);
+        World world = new World(null, 500, 300, 15, 10);
         world.addImage("resources/tile0.png");
         world.addImage("resources/tile1.png");
         world.addImage("resources/tile2.png");
         world.addImage("resources/tile3.png");
         world.addImage("resources/tile4.png");
-        world.createMap();
+        world.createMap(100.0);
         world.setWorldScale(2);
         while (true) {
             if (window.shouldClose()) {
                 System.exit(0);
             }
             if (window.keyPressed('w')) {
-                s.moveY(-2);
+                s.moveY(-3);
             }
             if (window.keyPressed('s')) {
-                s.moveY(2);
+                s.moveY(3);
             }
             if (window.keyPressed('a')) {
-                s.moveX(-2);
+                s.moveX(-3);
             }
             if (window.keyPressed('d')) {
-                s.moveX(2);
+                s.moveX(3);
             }
             if (window.keyPressed('f') && !window.isFullscreen()) {
                 window.fullscreen();
@@ -42,9 +42,9 @@ public class Main {
             if (window.keyPressed('r') && window.isFullscreen()) {
                 window.windowed();
             }
-            world.loadChunksAroundPlayer(new Pixel(s.getPos().x + window.getWidth() / 2, s.getPos().y + window.getHeight() / 2), 2, 2);
+            world.loadChunksAroundPlayer(new Pos(s.getPos().x + window.getWidth() / 2, s.getPos().y + window.getHeight() / 2), 3, 3);
             window.clear();
-            window.drawWorldChunks(world, new Pixel(-s.getPos().x, -s.getPos().y));
+            window.drawWorldChunks(world, new Pos(-s.getPos().x, -s.getPos().y));
             window.drawSprite(s);
             window.drawFPS();
             window.refresh();
