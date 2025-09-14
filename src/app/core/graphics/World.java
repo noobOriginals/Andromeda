@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import app.core.utils.ExceptionHandler;
-import app.core.utils.Generators;
+import app.core.utils.PerlinUtils;
 import app.core.utils.Pos;
-import app.core.utils.Utility;
+import app.core.utils.SeedPerlin;
 
 public class World {
     private int[][] tiles;
@@ -68,23 +68,12 @@ public class World {
             images.add(ImageIO.read(new File(imagePath)));
         });
     }
-    public void createMap(long seed, double scale) {
+    public void createMap(double scale) {
+        SeedPerlin gen = new SeedPerlin(seed.hashCode());
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
+                double v = gen.perlin(x / scale, y / scale, PerlinUtils::fade);
                 int idx = 0;
-                int boundary = 10;
-                if (y == 0) {
-                    idx = 3;
-                }
-                else if (y == boundary) {
-                    idx = 2;
-                }
-                else if (y > boundary) {
-                    idx = 1;
-                }
-                // idx = 4; // Debugging
-                tiles[y][x] = idx;
-                double v = Generators.perlin(x / scale, y / scale);
                 if (v < 0.0) {
                     idx = 1;
                 }
@@ -97,7 +86,51 @@ public class World {
                 tiles[y][x] = idx;
             }
         }
-        Generators.generatePerlinNoise(sizeX, sizeY, scale).save("perlin.bmp");
+        genColorPerlinImage(gen, "perlin.png", sizeX, sizeY, scale);
+    }
+    private static void genSeedPerlinImage(SeedPerlin gen, String name, int width, int height, double scale) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int p = Math.clamp((int)((gen.perlin(x / scale, y / scale, PerlinUtils::fade) + 1) * 0.5 * 255), 0, 255);
+                image.setRGB(x, y, (p << 16) | (p << 8) | p);
+            }
+        }
+        File output = new File(name);
+        ExceptionHandler.tryCatch(() -> {
+            ImageIO.write(image, "png", output);
+        });
+        System.out.println("Saved " + name);
+    }
+    private static void genColorPerlinImage(SeedPerlin gen, String name, int width, int height, double scale) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+            	double value = gen.perlin(x / scale, y / scale, PerlinUtils::fade);
+                int thrsh = 252;
+                double r = 1.0, g = 1.0, b = 1.0;
+                g -= Math.abs(value);
+                r -= Math.clamp(value, 0.0, 1.0);
+                b += Math.clamp(value, -1.0, 0.0);
+                int rf, gf, bf;
+                rf = (int)(r * 255);
+                gf = (int)(g * 255);
+                bf = (int)(b * 255);
+                int rgb = (rf << 16) | (gf << 8) | bf;
+                if (rf >= thrsh && gf >= thrsh && bf >= thrsh) {
+                    rgb = (0 << 16) | (255 << 8) | 0;
+                }
+                if (x % (int)scale == 0 || y % (int)scale == 0) {
+                    rgb = 0;
+                }
+                image.setRGB(x, y, rgb);
+            }
+        }
+        File output = new File(name);
+        ExceptionHandler.tryCatch(() -> {
+            ImageIO.write(image, "png", output);
+        });
+        System.out.println("Saved " + name);
     }
     public void setWorldScale(int scale) {
         if (scale < 1) {

@@ -12,14 +12,14 @@ public class Main {
         s.loadImageFromFile("resources/sprite.png");
         window.setFPSCap(120);
         window.capFPS();
-        World world = new World(null, 500, 300, 15, 10);
+        World world = new World("noob", 500, 300, 15, 10);
         world.addImage("resources/tile0.png");
         world.addImage("resources/tile1.png");
         world.addImage("resources/tile2.png");
         world.addImage("resources/tile3.png");
         world.addImage("resources/tile4.png");
-        world.createMap("noob".hashCode(), 50.0);
-        world.setWorldScale(2);
+        world.createMap(50.0);
+        world.setWorldScale(1);
         while (true) {
             if (window.shouldClose()) {
                 System.exit(0);
