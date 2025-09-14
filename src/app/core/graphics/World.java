@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import app.core.utils.ExceptionHandler;
 import app.core.utils.Generators;
 import app.core.utils.Pos;
+import app.core.utils.Utility;
 
 public class World {
     private int[][] tiles;
@@ -67,7 +68,7 @@ public class World {
             images.add(ImageIO.read(new File(imagePath)));
         });
     }
-    public void createMap(double scale) {
+    public void createMap(long seed, double scale) {
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
                 int idx = 0;
@@ -90,9 +91,13 @@ public class World {
                 else if (v >= 0.0) {
                     idx = 0;
                 }
+                if (v > -0.05 && v < 0.05) {
+                    idx = 3;
+                }
                 tiles[y][x] = idx;
             }
         }
+        Generators.generatePerlinNoise(sizeX, sizeY, scale).save("perlin.bmp");
     }
     public void setWorldScale(int scale) {
         if (scale < 1) {

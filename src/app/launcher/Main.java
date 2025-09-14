@@ -18,7 +18,7 @@ public class Main {
         world.addImage("resources/tile2.png");
         world.addImage("resources/tile3.png");
         world.addImage("resources/tile4.png");
-        world.createMap(100.0);
+        world.createMap("noob".hashCode(), 50.0);
         world.setWorldScale(2);
         while (true) {
             if (window.shouldClose()) {
